@@ -3,7 +3,7 @@ services:
     container_name: 'security_db'
     image: 'mysql:latest'
     environment:
-      - 'MYSQL_DATABASE=security_db'
+      - 'MYSQL_DATABASE=securityAPI_db'
       - 'MYSQL_PASSWORD=123456'
       - 'MYSQL_ROOT_PASSWORD=123456'
       - 'MYSQL_USER=admin'
