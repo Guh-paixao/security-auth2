@@ -1,10 +1,14 @@
 package br.com.gustavo.springsecurity.controller;
 
 import br.com.gustavo.springsecurity.controller.dto.CreateTweetDTO;
+import br.com.gustavo.springsecurity.controller.dto.FeedDTO;
+import br.com.gustavo.springsecurity.controller.dto.FeedItemDTO;
 import br.com.gustavo.springsecurity.entities.Role;
 import br.com.gustavo.springsecurity.entities.Tweet;
 import br.com.gustavo.springsecurity.repositories.TweetRepository;
 import br.com.gustavo.springsecurity.repositories.UserRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -35,6 +39,17 @@ public class TweetController {
     tweetRepository.save(tweet);
 
     return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/feed")
+    public ResponseEntity<FeedDTO> feed(@RequestParam(value = "page", defaultValue = "0") int page,
+                                        @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+var tweets = tweetRepository.findAll(
+        PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimestamp"))
+        .map(tweet -> new FeedItemDTO(tweet.getTweetId(), tweet.getContent(), tweet.getUser().getUsername())
+        );
+
+return ResponseEntity.ok(new FeedDTO(tweets.getContent(), page, pageSize, tweets.getTotalPages(), (int) tweets.getTotalElements()));
     }
 
     @DeleteMapping("/tweets/{id}")
