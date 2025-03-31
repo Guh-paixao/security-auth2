@@ -1,0 +1,11 @@
+services:
+  mysql:
+    container_name: 'security_db'
+    image: 'mysql:latest'
+    environment:
+      - 'MYSQL_DATABASE=security_db'
+      - 'MYSQL_PASSWORD=123456'
+      - 'MYSQL_ROOT_PASSWORD=123456'
+      - 'MYSQL_USER=admin'
+    ports:
+      - '3306:3306'
