@@ -30,26 +30,26 @@ public class TweetController {
 
     @PostMapping("/tweets")
     public ResponseEntity<Void> createTweet(@RequestBody CreateTweetDTO dto, JwtAuthenticationToken token) {
-    var user = userRepository.findById(UUID.fromString(token.getName()));
+        var user = userRepository.findById(UUID.fromString(token.getName()));
 
-    var tweet = new Tweet();
-    tweet.setUser(user.get());
-    tweet.setContent(dto.content());
+        var tweet = new Tweet();
+        tweet.setUser(user.get());
+        tweet.setContent(dto.content());
 
-    tweetRepository.save(tweet);
+        tweetRepository.save(tweet);
 
-    return ResponseEntity.ok().build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/feed")
     public ResponseEntity<FeedDTO> feed(@RequestParam(value = "page", defaultValue = "0") int page,
                                         @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
-var tweets = tweetRepository.findAll(
-        PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimestamp"))
-        .map(tweet -> new FeedItemDTO(tweet.getTweetId(), tweet.getContent(), tweet.getUser().getUsername())
-        );
+        var tweets = tweetRepository.findAll(
+                        PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimestamp"))
+                .map(tweet -> new FeedItemDTO(tweet.getTweetId(), tweet.getContent(), tweet.getUser().getUsername())
+                );
 
-return ResponseEntity.ok(new FeedDTO(tweets.getContent(), page, pageSize, tweets.getTotalPages(), (int) tweets.getTotalElements()));
+        return ResponseEntity.ok(new FeedDTO(tweets.getContent(), page, pageSize, tweets.getTotalPages(), tweets.getTotalElements()));
     }
 
     @DeleteMapping("/tweets/{id}")
@@ -60,7 +60,7 @@ return ResponseEntity.ok(new FeedDTO(tweets.getContent(), page, pageSize, tweets
         var isAdmin = user.get().getRoles().stream().anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
 
         if (isAdmin || tweet.getUser().getUserId().equals(UUID.fromString(token.getName()))) {
-        tweetRepository.deleteById(tweetId);
+            tweetRepository.deleteById(tweetId);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
